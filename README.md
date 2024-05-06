@@ -1,15 +1,16 @@
 # Flask Docker Skeleton
 
 This is a simple skeleton for a Flask app that can be run in a Docker container
-or deployed to fly.io. I'll be adding Docker Swarm soon as well.
+or deployed to fly.io. It uses gunicorn for WSGI and nginx as a reverse proxy
+for handling HTTP requests.
 
 ## Usage
 
 To run the app:
 
 ```sh
-docker build -t flask-docker .
-docker run -p 80:80 flask-docker
+docker build -t flask .
+docker run -p 80:80 flask
 ```
 
 To mount the local directory so that you don't have to keep building. When you
@@ -17,8 +18,17 @@ make changes to the code, the server will automatically reload. This should
 only be used for development.
 
 ```sh
-docker build -t flask-docker .
-docker run -p 80:80 -v $(pwd):/app flask-docker
+docker build -t flask .
+docker run -p 80:80 -v $(pwd):/app flask
+```
+
+To rebuild the image:
+
+```sh
+docker ps -a
+docker rm [container-id]
+docker image rm flask
+docker build -t flask .
 ```
 
 To run locally:
@@ -60,7 +70,3 @@ To delete the instance:
 fly apps list
 fly apps destroy [app-name]
 ```
-
-## TODO
-
-- Use gunicorn instead of flask's built-in server
