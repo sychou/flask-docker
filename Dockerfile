@@ -1,17 +1,32 @@
-# Use the official Python image with version 3.11.9-slim
-FROM python:3.11.9-slim
+# Use the official Python base image
+#FROM python:3.11.9-slim-bullseye
+FROM python:3.11.9-bullseye
 
-# Set the working directory inside the container
+# Set the working directory
 WORKDIR /app
 
-# Copy the requirements file to the working directory
-COPY requirements.txt /app/requirements.txt
+# Copy the requirements file
+COPY requirements.txt .
 
-# Install dependencies from the requirements file
+# Install the Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of your application's code to the working directory
-COPY . /app
+# Install Nginx and Supervisor
+RUN apt-get update && \
+    apt-get install -y nginx supervisor && \
+    rm -rf /var/lib/apt/lists/*
 
-# Command to run the application
-CMD ["flask", "run", "--host=0.0.0.0", "--port=80", "--debug"]
+# Copy the Flask application code
+COPY app.py .
+
+# Copy the Nginx configuration file
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy the Supervisor configuration file
+COPY supervisor.conf /etc/supervisor/conf.d/supervisor.conf
+
+# Expose the port for the Nginx server
+EXPOSE 80
+
+# Start Supervisor and pass control to it
+CMD ["/usr/bin/supervisord"]

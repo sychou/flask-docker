@@ -21,6 +21,14 @@ docker build -t flask-docker .
 docker run -p 80:80 -v $(pwd):/app flask-docker
 ```
 
+To run locally:
+
+```sh
+flask run reload
+# or
+gunicorn app:app
+```
+
 If you want to have a local venv (if nothing else, for the IDE to be able to
 detect dependent imports):
 
